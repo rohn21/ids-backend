@@ -1,0 +1,25 @@
+# concept of soft-delete for database-table
+https://www.tomisin.dev/blog/implementing-soft-delete-in-django-an-intuitive-guide
+https://dev.to/bikramjeetsingh/soft-deletes-in-django-a9j
+
+# problem of "InconsistentMigrationHistory: Migration socialaccount.0001_initial"
+https://stackoverflow.com/questions/77814708/django-db-migrations-exceptions-inconsistentmigrationhistory-migration-socialac - "Answer"
+https://stackoverflow.com/questions/38996599/django-manage-py-migration-applied-before-its-dependency/56535643#56535643
+
+sidebar.html line-44
+<li
+         class="sidebar-item {{ 'active' if (sidebarItem.url == filename or filename|startsWith(sidebarItem.key)) }} {{'has-sub' if sidebarItem.submenu.length > 0 }}">
+                <a href="{{sidebarItem.url if sidebarItem.url!==undefined else '#'}}" class='sidebar-link'>
+                    <i class="bi bi-{{ sidebarItem.icon }}"></i>
+                    <span>{{sidebarItem.name}}</span>
+                </a>
+
+API endpoints
+
+base_url = 127.0.0.1:8000/api/
+
+accounts
+user-login - {base_url}/auth/login/  - POST
+user-login - {base_url}/auth/logout/    - POST
+user-register  - {base_url}/auth/register/ - POST
+user-profile - {base_url}/auth/user/profile - GET/PUT/PATCH
