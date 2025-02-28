@@ -18,14 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from dj_rest_auth.registration.views import (RegisterView,
-                                             ConfirmEmailView, ResendEmailVerificationView, VerifyEmailView
-                                             )
+from dj_rest_auth.views import PasswordResetConfirmView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view(), name='account_confirm_email'),
+    # path('account-confirm-email/<str:key>/', ConfirmEmailView.as_view(), name='account_confirm_email'),
+    # path('account-confirm-email/', VerifyEmailView.as_view(), name='account_email_verification_sent'),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'), name='dj_rest_auth'),
+    path('user/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
     path('api/auth/', include('accounts.urls'), name='accounts'),
     path('api/app/', include('intrusion_detection.urls'), name='intrusion-detection'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

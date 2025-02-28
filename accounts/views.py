@@ -38,9 +38,9 @@ class UserCreateAPIView(RegisterView):
             print(serializer.errors)
 
         serializer.is_valid(raise_exception=True)
-        # self.perform_create(serializer)
-        user = self.perform_create(serializer)
-        send_email_confirmation(request, user)  # when email_verification is required
+        self.perform_create(serializer)
+        # user = self.perform_create(serializer)
+        # send_email_confirmation(request, user)  # when email_verification is required
 
         headers = self.get_success_headers(serializer.validated_data)
 

@@ -180,12 +180,20 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': False,  # Makes sure refresh token is sent
 }
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"  # Use Email / Password authentication
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = os.environ.get(
+    "EMAIL_CONFIRM_REDIRECT_URL", ""
+)
+# The URL to redirect to after a successful email confirmation, in case of an authenticated user.
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = os.environ.get(
+    "EMAIL_CONFIRM_REDIRECT_URL", "http://127.0.0.1:8000/api/auth/login/"
+)
 
 # Django SMTP
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
