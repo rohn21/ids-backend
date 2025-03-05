@@ -12,15 +12,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from dj_rest_auth.registration.views import RegisterView
+from dj_rest_auth.views import LoginView
 from allauth.account.utils import send_email_confirmation
 from .models import Profile
 from .serializers import (
     CustomUserSerializer, UserDetailsSerializer
 )
-from .permissions import IsOwnerOrReadonly
+from .permissions import IsAdminOrReadonly, IsOwnerOrReadonly
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
 
 class UserCreateAPIView(RegisterView):
     serializer_class = CustomUserSerializer
@@ -38,16 +40,32 @@ class UserCreateAPIView(RegisterView):
             print(serializer.errors)
 
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        # user = self.perform_create(serializer)
-        # send_email_confirmation(request, user)  # when email_verification is required
+        user = self.perform_create(serializer)
+        send_email_confirmation(request, user)  # when email_verification is required
+        # self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.validated_data)
 
         return Response({"detail": "User registered successfully"}, status=status.HTTP_201_CREATED, headers=headers)
 
-class ProfileDetailAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Profile.objects.all()
+
+class UserLoginView(LoginView):
+    def get_response(self):
+        user = self.user
+        response_data = {
+            'user': {
+                'username': user.username,
+                'email': user.email,
+                'role': user.role,
+            },
+            'access_token': str(self.access_token),
+            'refresh_token': str(self.refresh_token),
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class ProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()  # for data with filteration
     serializer_class = UserDetailsSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsOwnerOrReadonly]
@@ -56,6 +74,45 @@ class ProfileDetailAPIView(generics.RetrieveUpdateAPIView):
         user = self.request.user
         profile, created = Profile.objects.get_or_create(user=user)
         return profile
+
+    def get_queryset(self):
+        return Profile.objects.filter(is_deleted=False)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = instance.user
+        instance.soft_delete()
+        user.soft_delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProfileRestoreAPIView(generics.GenericAPIView):
+    queryset = Profile.all_objects.all()  # all_objects used for data without filteration
+    serializer_class = UserDetailsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsOwnerOrReadonly]
+
+    def get_object(self):
+        try:
+            profile = Profile.all_objects.get(pk=self.kwargs['pk'])
+            return profile
+        except Profile.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance is None:
+            return Response({"detail": "Profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        user = instance.user
+        if instance.is_deleted:
+            instance.restore()
+            user.restore()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            return Response({"detail": "Profile is not deleted."}, status=status.HTTP_400_BAD_REQUEST)
 
 # class LogoutView(APIView):
 #     authentication_classes = [JWTAuthentication]
