@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
-from datetime import timezone
+from django.utils import timezone
 
 
 # soft-delete-manager
@@ -15,8 +15,8 @@ class SoftDeleteManager(models.Manager):
 class BaseModel(models.Model):
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True, default=None)
-    objects = SoftDeleteManager() #filter-soft-deleted-objects
-    all_objects = models.Manager() #all-objects
+    objects = SoftDeleteManager()  # filter-soft-deleted-objects
+    all_objects = models.Manager()  # all-objects
 
     def soft_delete(self):
         self.is_deleted = True
@@ -65,7 +65,12 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, BaseModel, PermissionsMixin):
+    USER_ROLE = [
+        ('admin', 'ADMIN'),
+        ('user', 'USER')
+    ]
+
     username = models.CharField(unique=True, max_length=200)
     email = models.EmailField(
         verbose_name='Email',
@@ -79,6 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    role = models.CharField(max_length=20, choices=USER_ROLE, default='user', null=True, blank=True)
     is_email_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -96,16 +102,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Simplest possible answer: Yes, always
         return True
 
-    # @property
-    # def is_admin(self):
-    #     "Is the user an admin member?"
-    #     return self.is_admin
+    def save(self, *args, **kwargs):
+        if self.role == 'admin':
+            self.is_staff = True
+        else:
+            self.is_staff = False
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
 
 
-class Profile(models.Model):
+class Profile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profiles')
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
