@@ -217,6 +217,9 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True
 }
 
+# redis-server
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
