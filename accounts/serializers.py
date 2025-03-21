@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Profile
+from .models import Profile, ContactUs
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -87,3 +87,8 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             user.username = user_data.get('username', user.username)
             user.save()
         return instance
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs
+        fields = "__all__"

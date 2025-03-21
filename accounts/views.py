@@ -14,9 +14,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from dj_rest_auth.registration.views import RegisterView
 from dj_rest_auth.views import LoginView
 from allauth.account.utils import send_email_confirmation
-from .models import Profile
+from .models import Profile, ContactUs
 from .serializers import (
-    CustomUserSerializer, UserDetailsSerializer
+    CustomUserSerializer, UserDetailsSerializer, ContactUsSerializer
 )
 from .permissions import IsAdminOrReadonly, IsOwnerOrReadonly
 from django.contrib.auth import get_user_model
@@ -113,6 +113,14 @@ class ProfileRestoreAPIView(generics.GenericAPIView):
             return Response(serializer.data)
         else:
             return Response({"detail": "Profile is not deleted."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# contact-us
+class ContactusAPIView(generics.ListCreateAPIView):
+    queryset = ContactUs.objects.all()
+    serializer_class = ContactUsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.AllowAny]
 
 # class LogoutView(APIView):
 #     authentication_classes = [JWTAuthentication]
