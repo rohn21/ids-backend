@@ -16,7 +16,7 @@ from dj_rest_auth.views import LoginView
 from allauth.account.utils import send_email_confirmation
 from .models import Profile, ContactUs
 from .serializers import (
-    CustomUserSerializer, UserDetailsSerializer, ContactUsSerializer
+    CustomUserSerializer, UserDetailsSerializer, ContactUsSerializer, UserProfileSerializer
 )
 from .permissions import IsAdminOrReadonly, IsOwnerOrReadonly
 from django.contrib.auth import get_user_model
@@ -61,8 +61,20 @@ class UserLoginView(LoginView):
             'access_token': str(self.access_token),
             'refresh_token': str(self.refresh_token),
         }
+        print(response_data)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
+class UserProfileAPIView(generics.RetrieveAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = UserProfileSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsOwnerOrReadonly]
+
+    def get_object(self):
+        user = self.request.user
+        profile = Profile.objects.get(user=user)
+        print(profile)
+        return profile
 
 class ProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()  # for data with filteration

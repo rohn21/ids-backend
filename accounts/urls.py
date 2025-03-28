@@ -1,7 +1,7 @@
 from django.urls import path, include
 from .views import (UserCreateAPIView, UserLoginView,
                     ProfileDetailAPIView, ProfileRestoreAPIView,
-                    ContactusAPIView)
+                    ContactusAPIView, UserProfileAPIView)
 from dj_rest_auth.views import LoginView, LogoutView
 from dj_rest_auth.registration.views import (RegisterView,
                                              ConfirmEmailView, ResendEmailVerificationView, VerifyEmailView
@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='rest_logout'),
     path('register/', UserCreateAPIView.as_view(), name='rest_register'),
     path('user/profile/', ProfileDetailAPIView.as_view(), name='user_profile'),
+    path('profile/', UserProfileAPIView.as_view(), name='profile'),
     path('user/<int:pk>/profile/restore/', ProfileRestoreAPIView.as_view(), name='user_profile_restore'),
     path('user/password/reset/', PasswordResetView.as_view(), name='rest_password_reset'),
     path('user/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(),

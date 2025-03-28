@@ -88,6 +88,14 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             user.save()
         return instance
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Profile
+        fields = ['profile_pic', 'username']
+
+
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs
