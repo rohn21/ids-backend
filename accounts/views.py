@@ -61,7 +61,6 @@ class UserLoginView(LoginView):
             'access_token': str(self.access_token),
             'refresh_token': str(self.refresh_token),
         }
-        print(response_data)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
 class UserProfileAPIView(generics.RetrieveAPIView):
@@ -73,7 +72,6 @@ class UserProfileAPIView(generics.RetrieveAPIView):
     def get_object(self):
         user = self.request.user
         profile = Profile.objects.get(user=user)
-        print(profile)
         return profile
 
 class ProfileDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

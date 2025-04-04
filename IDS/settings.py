@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'intrusion_detection',
+    'intrusion_net',
     'vulnerability_scanner'
 ]
 

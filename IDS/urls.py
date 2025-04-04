@@ -28,5 +28,6 @@ urlpatterns = [
     path('user/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
     path('api/auth/', include('accounts.urls'), name='accounts'),
     path('api/app/', include('intrusion_detection.urls'), name='intrusion-detection'),
+    path('api/app/', include('intrusion_net.urls'), name='intrusion_net'),
     path('api/app/', include('vulnerability_scanner.urls'), name='vulnerability_scanner-detection'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
