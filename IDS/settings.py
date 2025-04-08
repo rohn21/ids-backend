@@ -51,8 +51,9 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
 
     'accounts',
-    'intrusion_detection',
+    # 'intrusion_detection',
     'intrusion_net',
+    # 'intrusion_system',
     'vulnerability_scanner'
 ]
 

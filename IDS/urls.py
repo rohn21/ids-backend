@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from dj_rest_auth.views import PasswordResetConfirmView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
@@ -27,7 +28,7 @@ urlpatterns = [
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'), name='dj_rest_auth'),
     path('user/password/reset/confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
     path('api/auth/', include('accounts.urls'), name='accounts'),
-    path('api/app/', include('intrusion_detection.urls'), name='intrusion-detection'),
-    path('api/app/', include('intrusion_net.urls'), name='intrusion_net'),
-    path('api/app/', include('vulnerability_scanner.urls'), name='vulnerability_scanner-detection'),
+    # path('api/app/', include('intrusion_detection.urls'), name='intrusion-detection'),
+    path('api/intrusion-net/', include('intrusion_net.urls'), name='intrusion_net'),
+    path('api/vulnerability-scanner/', include('vulnerability_scanner.urls'), name='vulnerability_scanner_detection'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
