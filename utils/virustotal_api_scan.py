@@ -74,19 +74,19 @@ def check_virustotal_uploaded_file(file_obj):
                 upload_data = upload_response.json()
                 return {
                     "source": "uploaded",
-                    "status": "unsafe",
+                    "status": "intruded",
                     "message": "File uploaded for scanning. No results yet.",
                     "data": upload_data
                 }
             else:
                 return {
-                    "status": "unsafe",
+                    "status": "intruded",
                     "error": f"Upload failed: {upload_response.status_code}",
                     "details": upload_response.text
                 }
         else:
             return {
-                "status": "unsafe",
+                "status": "intruded",
                 "error": f"File hash lookup failed: {response.status_code}"
             }
     except Exception as e:

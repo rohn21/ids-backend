@@ -80,7 +80,7 @@ class FileScanViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No file uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
 
         result = check_virustotal_uploaded_file(uploaded_file)
-        status_label = result.get('status', 'unsafe')
+        status_label = result.get('status', 'intruded')
 
         inspection = FileInspection.objects.create(
             file_name=uploaded_file.name,
@@ -130,7 +130,7 @@ class InspectionChartsView(APIView):
             'bar_chart': bar_chart_data
         })
 
-class URLScanViewSet(viewsets.ViewSet):
+class   URLScanViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
