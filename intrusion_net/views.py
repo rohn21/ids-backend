@@ -130,7 +130,7 @@ class InspectionChartsView(APIView):
             'bar_chart': bar_chart_data
         })
 
-class   URLScanViewSet(viewsets.ViewSet):
+class URLScanViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -141,11 +141,17 @@ class   URLScanViewSet(viewsets.ViewSet):
 
         try:
             # Create a new scan record
+            parsed_url = urlparse(url)
+            hostname = parsed_url.hostname or parsed_url.path  # fallback if no scheme is provided
+
+            if not hostname:
+                return Response({"error": "Invalid URL format"}, status=status.HTTP_400_BAD_REQUEST)
+
             url_scan = URLScan.objects.create(url=url)
 
             # Initialize and run the scan
             nm = nmap.PortScanner()
-            nm.scan(hosts=url, arguments='-sV -Pn')
+            nm.scan(hosts=hostname, arguments='-sV -Pn')
 
             scan_data = []
             safe_ports = {"80/tcp", "443/tcp", "22/tcp", "53/tcp", "25/tcp"}
