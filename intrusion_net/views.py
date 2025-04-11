@@ -31,8 +31,9 @@ class URLInspectionViewSet(viewsets.ModelViewSet):
 
             inspection = URLInspection.objects.create(
                 url=url,
+                status=status_label,
                 inspection_result=inspection_result,
-                status=status_label
+
             )
             # serializer = URLInspectionSerializer(inspection)
             serializer = self.get_serializer(inspection)
@@ -84,8 +85,8 @@ class FileScanViewSet(viewsets.ModelViewSet):
 
         inspection = FileInspection.objects.create(
             file_name=uploaded_file.name,
+            status=status_label,
             scan_result=result,
-            status=status_label
         )
 
         serializer = self.get_serializer(inspection)
@@ -223,3 +224,49 @@ class URLScanViewSet(viewsets.ViewSet):
             "port_details": url_scan.port_details,
             "scan_record": serializer.data
         }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def security_headers_scan(self, request):
+        url = request.data.get("url")
+        if not url:
+            return Response({"error": "URL is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            parsed_url = urlparse(url)
+            hostname = parsed_url.hostname or parsed_url.path
+            if not hostname:
+                return Response({"error": "Invalid URL format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            command = ["nmap", "-p80,443", "--script", "http-security-headers", hostname]
+            result = subprocess.run(command, capture_output=True, text=True)
+
+            return Response({
+                "message": "Security header scan completed",
+                "output": result.stdout
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from .models import FileInspection
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import URLInspection
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+
+class CombinedInspectionChartView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        url_scan_data = URLScan.objects.annotate(date=TruncDate('created_at')).values('date', 'intruder_status').annotate(count=Count('id'))
+        url_inspect_data = URLInspection.objects.annotate(date=TruncDate('created_at')).values('date', 'status').annotate(count=Count('id'))
+        file_inspect_data = FileInspection.objects.annotate(date=TruncDate('uploaded_at')).values('date', 'status').annotate(count=Count('id'))
+
+        return Response({
+            "url_scan": list(url_scan_data),
+            "url_inspection": list(url_inspect_data),
+            "file_inspection": list(file_inspect_data)
+        })

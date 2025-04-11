@@ -158,16 +158,16 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 
-    # # JWT-Authentication
-    # 'DEFAULT_AUTHENTICATION_CLASS': [
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #     # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    # ],
-    #
-    # # Permission
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+    # JWT-Authentication
+    'DEFAULT_AUTHENTICATION_CLASS': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ],
+
+    # Permission
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 # dj-rest-auth

@@ -9,7 +9,7 @@ class URLInspectionSerializer(serializers.ModelSerializer):
 class FileInspectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileInspection
-        fields = '__all__'
+        fields = ['file_name', 'status', 'scan_result', 'uploaded_at']
 
 class URLScanSerializer(serializers.ModelSerializer):
     class Meta:

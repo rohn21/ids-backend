@@ -10,6 +10,7 @@ class URLScan(BaseModel):
     url = models.URLField(unique=False, help_text="URL to be scanned")
     intruder_status = models.CharField(max_length=10, choices=INTRUDER_STATUS, default='safe', help_text="Status of the URL after scanning")
     port_details = models.JSONField(blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.url
